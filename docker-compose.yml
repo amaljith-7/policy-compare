@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: prominent
+      POSTGRES_USER: prominent
+      POSTGRES_PASSWORD: prominent_secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - DATABASE_URL=postgres://prominent:prominent_secret@db:5432/prominent
+      - SECRET_KEY=django-docker-secret-key-change-in-production
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - media_data:/app/media
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  media_data:
