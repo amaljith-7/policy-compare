@@ -7,8 +7,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prominent_secret}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-prominent}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -24,9 +27,13 @@ services:
     ports:
       - "8100:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - media_data:/app/media
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 3"
 
   frontend:
     build:
