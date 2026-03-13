@@ -15,14 +15,14 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     environment:
-      - DATABASE_URL=postgres://prominent:prominent_secret@db:5432/prominent
-      - SECRET_KEY=django-docker-secret-key-change-in-production
-      - DEBUG=True
-      - ALLOWED_HOSTS=*
-      - CORS_ALLOWED_ORIGINS=http://localhost:3000
+      - DATABASE_URL=${DATABASE_URL:-postgres://prominent:prominent_secret@db:5432/prominent}
+      - SECRET_KEY=${SECRET_KEY:-django-docker-secret-key-change-in-production}
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:3001}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     ports:
-      - "8000:8000"
+      - "3002:8000"
     depends_on:
       - db
     volumes:
@@ -33,9 +33,9 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3002/api}
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - backend
 
