@@ -12,8 +12,8 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   if (!statusConfig) return <Badge variant="outline">{status}</Badge>;
 
   return (
-    <span className={cn('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium', statusConfig.color, className)}>
+    <Badge variant="secondary" className={cn(statusConfig.color, className)}>
       {statusConfig.label}
-    </span>
+    </Badge>
   );
 }

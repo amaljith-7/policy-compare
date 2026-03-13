@@ -1,8 +1,8 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { X, Search } from 'lucide-react';
 import { PRODUCT_TYPES, QUOTE_STATUSES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
@@ -31,10 +31,11 @@ export function QuoteFilters({ filters, onChange }: QuoteFiltersProps) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by status">
         {Object.entries(QUOTE_STATUSES).map(([value, config]) => (
           <button
             key={value}
+            aria-pressed={filters.status === value}
             onClick={() => setFilter('status', filters.status === value ? undefined : value)}
             className={cn(
               'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors cursor-pointer',
@@ -48,15 +49,16 @@ export function QuoteFilters({ filters, onChange }: QuoteFiltersProps) {
         ))}
       </div>
       <div className="flex gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
+        <InputGroup className="flex-1 max-w-sm">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
             placeholder="Search by customer name..."
             value={filters.search || ''}
             onChange={(e) => setFilter('search', e.target.value || undefined)}
-            className="pl-9"
           />
-        </div>
+        </InputGroup>
         <Select
           value={filters.product_type || 'all'}
           onValueChange={(value) => setFilter('product_type', value === 'all' ? undefined : value || undefined)}
@@ -75,7 +77,7 @@ export function QuoteFilters({ filters, onChange }: QuoteFiltersProps) {
         </Select>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={clearFilters}>
-            <X className="mr-1 h-4 w-4" />
+            <X />
             Clear
           </Button>
         )}

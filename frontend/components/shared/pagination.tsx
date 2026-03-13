@@ -1,7 +1,14 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Pagination as PaginationRoot,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 interface PaginationProps {
   currentPage: number;
@@ -21,48 +28,58 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
   }
 
   return (
-    <div className="flex items-center gap-1">
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8"
-        disabled={currentPage <= 1}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      {start > 1 && (
-        <>
-          <Button variant="outline" size="sm" className="h-8 w-8" onClick={() => onPageChange(1)}>1</Button>
-          {start > 2 && <span className="px-1 text-muted-foreground">...</span>}
-        </>
-      )}
-      {pages.map((page) => (
-        <Button
-          key={page}
-          variant={page === currentPage ? 'default' : 'outline'}
-          size="sm"
-          className="h-8 w-8"
-          onClick={() => onPageChange(page)}
-        >
-          {page}
-        </Button>
-      ))}
-      {end < totalPages && (
-        <>
-          {end < totalPages - 1 && <span className="px-1 text-muted-foreground">...</span>}
-          <Button variant="outline" size="sm" className="h-8 w-8" onClick={() => onPageChange(totalPages)}>{totalPages}</Button>
-        </>
-      )}
-      <Button
-        variant="outline"
-        size="icon"
-        className="h-8 w-8"
-        disabled={currentPage >= totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </div>
+    <PaginationRoot>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious
+            onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+            className={currentPage <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+            text=""
+          />
+        </PaginationItem>
+        {start > 1 && (
+          <>
+            <PaginationItem>
+              <PaginationLink onClick={() => onPageChange(1)} className="cursor-pointer">1</PaginationLink>
+            </PaginationItem>
+            {start > 2 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+          </>
+        )}
+        {pages.map((page) => (
+          <PaginationItem key={page}>
+            <PaginationLink
+              isActive={page === currentPage}
+              onClick={() => onPageChange(page)}
+              className="cursor-pointer"
+            >
+              {page}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+        {end < totalPages && (
+          <>
+            {end < totalPages - 1 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+            <PaginationItem>
+              <PaginationLink onClick={() => onPageChange(totalPages)} className="cursor-pointer">{totalPages}</PaginationLink>
+            </PaginationItem>
+          </>
+        )}
+        <PaginationItem>
+          <PaginationNext
+            onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+            className={currentPage >= totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+            text=""
+          />
+        </PaginationItem>
+      </PaginationContent>
+    </PaginationRoot>
   );
 }

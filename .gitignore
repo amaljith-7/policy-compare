@@ -37,6 +37,7 @@ env/
 .DS_Store
 *.pem
 Thumbs.db
+.next
 
 # Frontend (Next.js in /frontend)
 frontend/node_modules/

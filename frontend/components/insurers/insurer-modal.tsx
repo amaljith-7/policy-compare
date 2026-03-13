@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { useCreateInsurer, useUpdateInsurer } from '@/hooks/use-insurers';
 import type { Insurer } from '@/lib/types';
 
@@ -63,15 +63,15 @@ export function InsurerModal({ open, onOpenChange, insurer }: InsurerModalProps)
           <DialogTitle>{isEditing ? 'Edit Insurer' : 'Add Insurer'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+          <Field data-invalid={!!errors.name}>
+            <FieldLabel htmlFor="name">Name</FieldLabel>
             <Input id="name" {...register('name')} />
-            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="logo">Logo</Label>
+            <FieldError>{errors.name?.message}</FieldError>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="logo">Logo</FieldLabel>
             <Input id="logo" type="file" accept="image/*" ref={fileInputRef} />
-          </div>
+          </Field>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

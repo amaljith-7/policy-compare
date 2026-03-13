@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Eye, Columns, Download, Printer, Share2, Plus, StickyNote } from 'lucide-react';
+import { Eye, Columns, Printer, Plus, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { PreviewTable } from './preview-table';
 import { FocusView } from './focus-view';
@@ -123,37 +124,35 @@ export function ComparisonStage({ data, quoteId, onSave, customerName }: Compari
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center border rounded-lg">
+          <ButtonGroup>
             <Button
-              variant={mode === 'preview' ? 'default' : 'ghost'}
+              variant={mode === 'preview' ? 'default' : 'outline'}
               size="sm"
-              className="rounded-r-none"
               onClick={() => setMode('preview')}
             >
-              <Eye className="mr-1 h-4 w-4" />
+              <Eye />
               Preview
             </Button>
             <Button
-              variant={mode === 'focus' ? 'default' : 'ghost'}
+              variant={mode === 'focus' ? 'default' : 'outline'}
               size="sm"
-              className="rounded-l-none"
               onClick={() => setMode('focus')}
             >
-              <Columns className="mr-1 h-4 w-4" />
+              <Columns />
               Focus
             </Button>
-          </div>
+          </ButtonGroup>
           <Button variant="outline" size="sm" onClick={handleAddField}>
-            <Plus className="mr-1 h-4 w-4" />
+            <Plus />
             Add Field
           </Button>
           <Button variant="outline" size="sm" onClick={() => setNotesOpen(true)}>
-            <StickyNote className="mr-1 h-4 w-4" />
+            <StickyNote />
             Notes
           </Button>
           <ShareActions quoteId={quoteId} comparisonData={comparisonData} customerName={customerName} />
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={handlePrint}>
-            <Printer className="h-4 w-4" />
+          <Button variant="outline" size="icon" onClick={handlePrint}>
+            <Printer />
           </Button>
         </div>
       </div>

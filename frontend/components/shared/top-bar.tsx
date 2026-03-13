@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ModeToggle } from '@/components/shared/mode-toggle';
 import { useUIStore } from '@/stores/ui-store';
 import { useLogout } from '@/hooks/use-auth';
 
@@ -34,28 +35,31 @@ export function TopBar() {
   return (
     <header className="flex h-14 items-center justify-between border-b bg-background px-6">
       <div />
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={<Button variant="ghost" />}
-          className="flex items-center gap-2"
-        >
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-          </Avatar>
-          <span className="text-sm">{user?.full_name}</span>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem disabled>
-            <User className="mr-2 h-4 w-4" />
-            {user?.email}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex items-center gap-2">
+        <ModeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={<Button variant="ghost" />}
+            className="flex items-center gap-2"
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm">{user?.full_name}</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem disabled>
+              <User className="mr-2 h-4 w-4" />
+              {user?.email}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </header>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { cn } from '@/lib/utils';
+import { Toggle } from '@/components/ui/toggle';
 import type { InsurerData } from '@/lib/types';
 
 interface InsurerFilterChipsProps {
@@ -13,18 +13,15 @@ export function InsurerFilterChips({ insurers, visible, onToggle }: InsurerFilte
   return (
     <div className="flex flex-wrap gap-2">
       {insurers.map((insurer) => (
-        <button
+        <Toggle
           key={insurer.insurer_id}
-          onClick={() => onToggle(insurer.insurer_id)}
-          className={cn(
-            'inline-flex items-center rounded-full px-3 py-1 text-xs font-medium transition-colors cursor-pointer',
-            visible.has(insurer.insurer_id)
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground'
-          )}
+          size="sm"
+          pressed={visible.has(insurer.insurer_id)}
+          onPressedChange={() => onToggle(insurer.insurer_id)}
+          className="rounded-full px-3 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground aria-pressed:bg-primary aria-pressed:text-primary-foreground"
         >
           {insurer.insurer_name}
-        </button>
+        </Toggle>
       ))}
     </div>
   );

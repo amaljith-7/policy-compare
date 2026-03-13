@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useCreateUser, useUpdateUser, useRoles } from '@/hooks/use-users';
@@ -83,25 +83,25 @@ export function UserModal({ open, onOpenChange, user }: UserModalProps) {
           <DialogTitle>{isEditing ? 'Edit User' : 'Add User'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Full Name</Label>
+          <Field data-invalid={!!errors.full_name}>
+            <FieldLabel>Full Name</FieldLabel>
             <Input {...register('full_name')} />
-            {errors.full_name && <p className="text-sm text-destructive">{errors.full_name.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Email</Label>
+            <FieldError>{errors.full_name?.message}</FieldError>
+          </Field>
+          <Field data-invalid={!!errors.email}>
+            <FieldLabel>Email</FieldLabel>
             <Input type="email" {...register('email')} />
-            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-          </div>
+            <FieldError>{errors.email?.message}</FieldError>
+          </Field>
           {!isEditing && (
-            <div className="space-y-2">
-              <Label>Password</Label>
+            <Field data-invalid={!!errors.password}>
+              <FieldLabel>Password</FieldLabel>
               <Input type="password" {...register('password')} />
-              {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
-            </div>
+              <FieldError>{errors.password?.message}</FieldError>
+            </Field>
           )}
-          <div className="space-y-2">
-            <Label>Role</Label>
+          <Field>
+            <FieldLabel>Role</FieldLabel>
             <Select value={watch('role_id') || ''} onValueChange={(value) => value && setValue('role_id', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a role" />
@@ -114,10 +114,10 @@ export function UserModal({ open, onOpenChange, user }: UserModalProps) {
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
           <div className="flex items-center gap-2">
             <Switch checked={watch('is_active')} onCheckedChange={(checked) => setValue('is_active', checked)} />
-            <Label>Active</Label>
+            <FieldLabel>Active</FieldLabel>
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>

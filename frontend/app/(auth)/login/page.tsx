@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { useLogin } from '@/hooks/use-auth';
 
 const loginSchema = z.object({
@@ -41,32 +41,28 @@ export default function LoginPage() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+          <Field data-invalid={!!errors.email}>
+            <FieldLabel htmlFor="email">Email</FieldLabel>
             <Input
               id="email"
               type="email"
               placeholder="you@example.com"
               {...register('email')}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <FieldError>{errors.email?.message}</FieldError>
+          </Field>
+          <Field data-invalid={!!errors.password}>
+            <FieldLabel htmlFor="password">Password</FieldLabel>
             <Input
               id="password"
               type="password"
               placeholder="Enter your password"
               {...register('password')}
             />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
+            <FieldError>{errors.password?.message}</FieldError>
+          </Field>
           {login.isError && (
-            <p className="text-sm text-destructive">Invalid email or password</p>
+            <FieldError>Invalid email or password</FieldError>
           )}
           <Button type="submit" className="w-full" disabled={login.isPending}>
             {login.isPending ? 'Signing in...' : 'Sign In'}
