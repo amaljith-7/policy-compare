@@ -83,7 +83,7 @@ export function QuoteTable({ filters, onPageChange, onViewDetails }: QuoteTableP
                       value={quote.status}
                       onValueChange={(value) => value && handleStatusChange(quote.id, value)}
                     >
-                      <SelectTrigger className="h-7 w-[130px]">
+                      <SelectTrigger size="sm" className="w-[130px]">
                         <SelectValue>
                           <StatusBadge status={quote.status} />
                         </SelectValue>
@@ -102,15 +102,14 @@ export function QuoteTable({ filters, onPageChange, onViewDetails }: QuoteTableP
                 <TableCell>{new Date(quote.created_at).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={<Button variant="ghost" size="icon" />}
-                      className="h-8 w-8"
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal />
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => onViewDetails(quote.id)}>
-                        <Eye className="mr-2 h-4 w-4" />
+                        <Eye />
                         View Details
                       </DropdownMenuItem>
                       <PermissionGuard permission={PERMISSIONS.QUOTES_DELETE}>
@@ -118,7 +117,7 @@ export function QuoteTable({ filters, onPageChange, onViewDetails }: QuoteTableP
                           className="text-destructive"
                           onClick={() => deleteQuote.mutate(quote.id)}
                         >
-                          <Trash2 className="mr-2 h-4 w-4" />
+                          <Trash2 />
                           Delete
                         </DropdownMenuItem>
                       </PermissionGuard>

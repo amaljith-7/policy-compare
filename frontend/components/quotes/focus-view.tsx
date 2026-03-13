@@ -45,7 +45,7 @@ export function FocusView({ fields, insurers, onCellEdit, onFieldLabelEdit, onDe
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <Button variant="outline" size="icon" onClick={goPrev} disabled={currentIndex === 0}>
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft />
         </Button>
         <div className="text-center">
           <h3 className="font-semibold">{currentInsurer.insurer_name}</h3>
@@ -54,7 +54,7 @@ export function FocusView({ fields, insurers, onCellEdit, onFieldLabelEdit, onDe
           </p>
         </div>
         <Button variant="outline" size="icon" onClick={goNext} disabled={currentIndex === insurers.length - 1}>
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight />
         </Button>
       </div>
       <div className="space-y-1">

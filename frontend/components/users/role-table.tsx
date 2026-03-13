@@ -31,7 +31,7 @@ export function RoleTable() {
     <>
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus />
           Add Role
         </Button>
       </div>
@@ -64,8 +64,8 @@ export function RoleTable() {
                     <span className="text-sm text-muted-foreground">{permCount} permissions</span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditRole(role)}>
-                      <Pencil className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" onClick={() => setEditRole(role)}>
+                      <Pencil />
                     </Button>
                   </TableCell>
                 </TableRow>

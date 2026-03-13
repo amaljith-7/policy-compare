@@ -47,23 +47,23 @@ export function ShareActions({ quoteId, comparisonData, customerName }: ShareAct
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={<Button variant="outline" size="sm" />}
-      >
-        <Share2 className="mr-1 h-4 w-4" />
-        Share
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Share2 />
+          Share
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={handleDownloadPdf}>
-          <Download className="mr-2 h-4 w-4" />
+          <Download />
           Download PDF
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleShareWhatsApp}>
-          <MessageCircle className="mr-2 h-4 w-4" />
+          <MessageCircle />
           Share via WhatsApp
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleShareEmail}>
-          <Mail className="mr-2 h-4 w-4" />
+          <Mail />
           Share via Email
         </DropdownMenuItem>
       </DropdownMenuContent>

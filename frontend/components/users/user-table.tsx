@@ -31,7 +31,7 @@ export function UserTable() {
     <>
       <div className="mb-4 flex justify-end">
         <Button onClick={() => setModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus />
           Add User
         </Button>
       </div>
@@ -68,8 +68,8 @@ export function UserTable() {
                 </TableCell>
                 <TableCell>{new Date(user.created_at).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditUser(user)}>
-                    <Pencil className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" onClick={() => setEditUser(user)}>
+                    <Pencil />
                   </Button>
                 </TableCell>
               </TableRow>

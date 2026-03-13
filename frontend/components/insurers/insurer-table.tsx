@@ -79,16 +79,16 @@ export function InsurerTable() {
                 <TableCell className="text-right">
                   <PermissionGuard permission={PERMISSIONS.INSURERS_MANAGE}>
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setEditInsurer(insurer)}>
-                        <Pencil className="h-4 w-4" />
+                      <Button variant="ghost" size="icon" onClick={() => setEditInsurer(insurer)}>
+                        <Pencil />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive"
+                        className="text-destructive"
                         onClick={() => deleteInsurer.mutate(insurer.id)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 />
                       </Button>
                     </div>
                   </PermissionGuard>
