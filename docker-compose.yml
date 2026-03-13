@@ -2,9 +2,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: prominent
-      POSTGRES_USER: prominent
-      POSTGRES_PASSWORD: prominent_secret
+      POSTGRES_DB: ${POSTGRES_DB:-prominent}
+      POSTGRES_USER: ${POSTGRES_USER:-prominent}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prominent_secret}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
