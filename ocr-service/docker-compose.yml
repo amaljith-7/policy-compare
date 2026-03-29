@@ -1,0 +1,12 @@
+services:
+  ocr-service:
+    build: .
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OCR_SERVICE_API_KEY=${OCR_SERVICE_API_KEY}
+    ports:
+      - "8200:8200"
+    deploy:
+      resources:
+        limits:
+          memory: 6G

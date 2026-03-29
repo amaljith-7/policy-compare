@@ -1,8 +1,13 @@
-import base64
-import json
+import logging
 import os
-from openai import OpenAI
 
+import httpx
+
+logger = logging.getLogger(__name__)
+
+OCR_SERVICE_URL = os.environ.get("OCR_SERVICE_URL", "http://ocr-service:8200")
+OCR_SERVICE_API_KEY = os.environ.get("OCR_SERVICE_API_KEY", "")
+OCR_SERVICE_TIMEOUT = int(os.environ.get("OCR_SERVICE_TIMEOUT", "300"))
 
 DEFAULT_FIELDS = [
     'customer',
@@ -32,62 +37,38 @@ FIELD_LABELS = {
 
 
 def extract_from_pdf(pdf_bytes: bytes, product_type: str) -> dict:
-    client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
+    """Call the OCR microservice to extract fields from a PDF."""
+    url = f"{OCR_SERVICE_URL}/api/v1/extract"
+    headers = {"X-API-Key": OCR_SERVICE_API_KEY}
 
-    base64_pdf = base64.standard_b64encode(pdf_bytes).decode('utf-8')
-
-    fields_description = ', '.join([f'"{f}" ({FIELD_LABELS[f]})' for f in DEFAULT_FIELDS])
-
-    system_prompt = f"""You are an insurance document data extractor. Extract the following fields from the insurance quote PDF.
-Product type: {product_type}
-
-Fields to extract: {fields_description}
-
-Field variation hints:
-- "Customer" may appear as "Customer Details" or "Client Name"
-- "Insured Name" may appear as "Name of Insured" or "Policyholder"
-- "Mobile Number" may appear as "Phone", "Contact Number", or "Tel"
-- "VAT 5%" may appear as "VAT", "Tax", or "Value Added Tax"
-- "Excess" may appear as "Deductible"
-- "Insured Value" may appear as "Sum Insured" or "Coverage Amount"
-
-Return a JSON object with exactly these keys. If a field is not found, use "N/A" as the value.
-All values should be strings. For monetary amounts, include the currency symbol.
-Return ONLY valid JSON, no markdown formatting."""
-
-    for attempt in range(2):
-        try:
-            response = client.chat.completions.create(
-                model='gpt-4o',
-                messages=[
-                    {'role': 'system', 'content': system_prompt},
-                    {
-                        'role': 'user',
-                        'content': [
-                            {
-                                'type': 'file',
-                                'file': {
-                                    'filename': 'quote.pdf',
-                                    'file_data': f'data:application/pdf;base64,{base64_pdf}',
-                                },
-                            },
-                            {
-                                'type': 'text',
-                                'text': 'Extract the insurance quote data from this PDF document.',
-                            },
-                        ],
-                    },
-                ],
-                response_format={'type': 'json_object'},
-                max_tokens=2000,
+    try:
+        with httpx.Client(timeout=OCR_SERVICE_TIMEOUT) as client:
+            response = client.post(
+                url,
+                headers=headers,
+                files={"pdf": ("quote.pdf", pdf_bytes, "application/pdf")},
+                data={"product_type": product_type},
             )
-            result = json.loads(response.choices[0].message.content)
-            # Ensure all default fields are present
-            for field in DEFAULT_FIELDS:
-                if field not in result:
-                    result[field] = 'N/A'
-            return result
-        except Exception as e:
-            if attempt == 0:
-                continue
-            raise e
+            response.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        logger.error(f"OCR service returned {e.response.status_code}: {e.response.text}")
+        raise RuntimeError(f"OCR service error: {e.response.text}")
+    except httpx.RequestError as e:
+        logger.error(f"OCR service request failed: {e}")
+        raise RuntimeError(f"OCR service unavailable: {e}")
+
+    result = response.json()
+
+    if result.get("partial"):
+        logger.warning(f"Partial extraction: {result.get('error')}")
+
+    # Flatten {key: {value, confidence}} to {key: value} for backward compatibility
+    fields = {}
+    for key in DEFAULT_FIELDS:
+        field_data = result.get("fields", {}).get(key, {})
+        if isinstance(field_data, dict):
+            fields[key] = field_data.get("value", "N/A")
+        else:
+            fields[key] = str(field_data) if field_data else "N/A"
+
+    return fields

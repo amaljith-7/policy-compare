@@ -13,6 +13,20 @@ services:
       timeout: 5s
       retries: 5
 
+  ocr-service:
+    build:
+      context: ./ocr-service
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OCR_SERVICE_API_KEY=${OCR_SERVICE_API_KEY}
+    ports:
+      - "8200:8200"
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+
   backend:
     build:
       context: .
@@ -23,7 +37,9 @@ services:
       - DEBUG=${DEBUG:-False}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
       - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:8101}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OCR_SERVICE_URL=${OCR_SERVICE_URL:-http://ocr-service:8200}
+      - OCR_SERVICE_API_KEY=${OCR_SERVICE_API_KEY}
+      - OCR_SERVICE_TIMEOUT=${OCR_SERVICE_TIMEOUT:-300}
     ports:
       - "8100:8000"
     depends_on:
