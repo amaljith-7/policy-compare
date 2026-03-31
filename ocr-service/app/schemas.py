@@ -1,22 +1,13 @@
 from pydantic import BaseModel
 
 
-class FieldResult(BaseModel):
-    value: str
-    confidence: float
-
-
-class ExtractionResponse(BaseModel):
+class MaskResponse(BaseModel):
     success: bool
-    fields: dict[str, FieldResult]
-    raw_ocr_text: str
-    ocr_engine: str = "surya+docling"
-    llm_model: str
-    partial: bool = False
+    masked_pdf_base64: str
+    pii_fields: dict[str, str]  # e.g. {"customer": "JOSE POULOSE", "email": "..."}
     error: str | None = None
 
 
 class HealthResponse(BaseModel):
     status: str
     ocr_engine: str
-    llm_model: str
