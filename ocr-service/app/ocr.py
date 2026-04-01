@@ -44,7 +44,6 @@ def get_converter() -> DocumentConverter:
     if _converter is None:
         pipeline_options = PdfPipelineOptions(
             do_ocr=True,
-            ocr_model="suryaocr",
             allow_external_plugins=True,
             ocr_options=SuryaOcrOptions(lang=settings.OCR_LANGUAGES),
             images_scale=2.0,
