@@ -16,24 +16,17 @@ logger = logging.getLogger(__name__)
 
 
 def _patch_surya_decoder_config() -> None:
-    """Patch SuryaDecoderConfig to inject pad_token_id.
+    """Patch SuryaDecoderConfig to add pad_token_id class attribute.
 
-    surya-ocr 0.17.x doesn't set pad_token_id in SuryaDecoderConfig.__init__,
-    but transformers 5.x requires it as an explicit attribute (no longer defaults
-    to None). Patch at import time so it runs before any surya model is loaded.
+    surya-ocr 0.17.x doesn't define pad_token_id on SuryaDecoderConfig,
+    but transformers 5.x no longer provides it as a default via PretrainedConfig.
+    Setting it as a class-level default fixes the AttributeError at decode time.
     """
     try:
         from surya.common.surya.decoder.config import SuryaDecoderConfig
 
-        _orig = SuryaDecoderConfig.__init__
-
-        def _patched(self, *args, **kwargs):
-            kwargs.setdefault("pad_token_id", 0)
-            _orig(self, *args, **kwargs)
-            if not hasattr(self, "pad_token_id"):
-                self.pad_token_id = 0
-
-        SuryaDecoderConfig.__init__ = _patched
+        if not hasattr(SuryaDecoderConfig, "pad_token_id"):
+            SuryaDecoderConfig.pad_token_id = 0
     except Exception:
         pass
 
