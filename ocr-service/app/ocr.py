@@ -14,6 +14,32 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+
+def _patch_surya_decoder_config() -> None:
+    """Patch SuryaDecoderConfig to inject pad_token_id.
+
+    surya-ocr 0.17.x doesn't set pad_token_id in SuryaDecoderConfig.__init__,
+    but transformers 5.x requires it as an explicit attribute (no longer defaults
+    to None). Patch at import time so it runs before any surya model is loaded.
+    """
+    try:
+        from surya.common.surya.decoder.config import SuryaDecoderConfig
+
+        _orig = SuryaDecoderConfig.__init__
+
+        def _patched(self, *args, **kwargs):
+            kwargs.setdefault("pad_token_id", 0)
+            _orig(self, *args, **kwargs)
+            if not hasattr(self, "pad_token_id"):
+                self.pad_token_id = 0
+
+        SuryaDecoderConfig.__init__ = _patched
+    except Exception:
+        pass
+
+
+_patch_surya_decoder_config()
+
 _converter: DocumentConverter | None = None
 _foundation_predictor: FoundationPredictor | None = None
 _recognition_predictor: RecognitionPredictor | None = None
@@ -38,31 +64,9 @@ def get_converter() -> DocumentConverter:
     return _converter
 
 
-def _patch_surya_decoder_config() -> None:
-    """Patch SuryaDecoderConfig to inject pad_token_id.
-
-    surya-ocr 0.17.x doesn't set pad_token_id in SuryaDecoderConfig.__init__,
-    but transformers 5.x requires it as an explicit attribute (no longer defaults
-    to None). Without this patch the decoder raises AttributeError on init.
-    """
-    try:
-        from surya.common.surya.decoder.config import SuryaDecoderConfig
-
-        _orig = SuryaDecoderConfig.__init__
-
-        def _patched(self, *args, **kwargs):
-            kwargs.setdefault("pad_token_id", 0)
-            _orig(self, *args, **kwargs)
-
-        SuryaDecoderConfig.__init__ = _patched
-    except Exception:
-        pass
-
-
 def _get_surya_predictors():
     global _foundation_predictor, _recognition_predictor, _detection_predictor
     if _foundation_predictor is None:
-        _patch_surya_decoder_config()
         _foundation_predictor = FoundationPredictor()
         _recognition_predictor = RecognitionPredictor(_foundation_predictor)
         _detection_predictor = DetectionPredictor()
