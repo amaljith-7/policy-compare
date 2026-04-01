@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.config import settings
-from app.ocr import get_converter
+from app.ocr import _get_surya_predictors
 from app.router import router
 from app.schemas import HealthResponse
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Pre-loading OCR models...")
-    get_converter()
+    _get_surya_predictors()
     logger.info("OCR models loaded.")
     yield
 
