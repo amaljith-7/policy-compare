@@ -7,12 +7,14 @@ from surya.recognition import RecognitionPredictor
 logger = logging.getLogger(__name__)
 
 
-def _patch_surya_decoder_config() -> None:
-    """Patch SuryaDecoderConfig to add pad_token_id class attribute.
+def _patch_transformers_rope() -> None:
+    """Patch transformers 5.x incompatibilities with surya-ocr 0.17.x.
 
-    surya-ocr 0.17.x doesn't define pad_token_id on SuryaDecoderConfig,
-    but transformers 5.x no longer provides it as a default via PretrainedConfig.
-    Setting it as a class-level default fixes the AttributeError at decode time.
+    1. SuryaDecoderConfig missing pad_token_id — transformers 5.x no longer
+       provides it as a default via PretrainedConfig.
+    2. ROPE_INIT_FUNCTIONS missing 'default' key — transformers 5.x removed
+       the 'default' entry; surya falls back to rope_type='default' when
+       rope_scaling is None.
     """
     try:
         from surya.common.surya.decoder.config import SuryaDecoderConfig
@@ -22,8 +24,34 @@ def _patch_surya_decoder_config() -> None:
     except Exception:
         pass
 
+    try:
+        import torch
+        from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS
 
-_patch_surya_decoder_config()
+        if "default" not in ROPE_INIT_FUNCTIONS:
+
+            def _compute_default_rope_parameters(config, device=None, seq_len=None, **kwargs):
+                head_dim = getattr(config, "head_dim", None) or (
+                    config.hidden_size // config.num_attention_heads
+                )
+                base = getattr(config, "rope_theta", 10000.0)
+                inv_freq = 1.0 / (
+                    base
+                    ** (
+                        torch.arange(0, head_dim, 2, dtype=torch.int64).to(
+                            device=device, dtype=torch.float
+                        )
+                        / head_dim
+                    )
+                )
+                return inv_freq, 1.0
+
+            ROPE_INIT_FUNCTIONS["default"] = _compute_default_rope_parameters
+    except Exception:
+        pass
+
+
+_patch_transformers_rope()
 
 _foundation_predictor: FoundationPredictor | None = None
 _recognition_predictor: RecognitionPredictor | None = None
