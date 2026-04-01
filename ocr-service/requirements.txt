@@ -6,4 +6,3 @@ openai>=1.60.0
 docling>=2.15.0
 docling-surya>=0.1.0
 surya-ocr>=0.17.0
-transformers>=4.44.0,<4.46.0
