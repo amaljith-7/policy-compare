@@ -5,6 +5,7 @@ import tempfile
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
+import docling_surya  # noqa: F401 — ensures docling plugin is registered before use
 from docling_surya import SuryaOcrOptions
 from surya.detection import DetectionPredictor
 from surya.foundation import FoundationPredictor
@@ -44,7 +45,6 @@ def get_converter() -> DocumentConverter:
     if _converter is None:
         pipeline_options = PdfPipelineOptions(
             do_ocr=True,
-            allow_external_plugins=True,
             ocr_options=SuryaOcrOptions(lang=settings.OCR_LANGUAGES),
             images_scale=2.0,
         )
